@@ -21,7 +21,7 @@ async def lifespan(_: FastAPI):
     stop_scheduler()
 
 
-app = FastAPI(title="Voca API", version="0.2.0", description="Voca productivity API", lifespan=lifespan)
+app = FastAPI(title="LuuVi API", version="0.2.0", description="LuuVi productivity API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
@@ -36,7 +36,7 @@ app.include_router(notifications_router)
 
 @app.get("/api/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "voca-api"}
+    return {"status": "ok", "service": "luuvi-api"}
 
 
 @app.get("/api/status")
@@ -48,7 +48,7 @@ def status() -> dict[str, object]:
             "database_initialized": True,
             "tasks": True,
             "notifications": True,
-            "reminders": False,
+            "reminders": True,
             "calendar": False,
             "notes": False,
             "voice": bool(settings.gnani_api_key),
@@ -57,6 +57,6 @@ def status() -> dict[str, object]:
         "integrations": {
             "prisma_configured": bool(settings.gnani_api_key),
             "timbre_configured": bool(settings.gnani_api_key),
-            "reasoning_configured": bool(settings.reasoning_provider and settings.reasoning_api_url and settings.reasoning_api_key),
+            "reasoning_configured": False,
         },
     }

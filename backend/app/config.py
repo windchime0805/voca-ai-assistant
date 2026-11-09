@@ -6,7 +6,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     database_url: str = "sqlite:///./voca.db"
     cors_origins: str = "http://localhost:5173"
-    timezone: str = "Asia/Kolkata"
     demo_mode: bool = True
     gnani_api_key: str = ""
     prisma_model: str = ""
@@ -14,10 +13,6 @@ class Settings(BaseSettings):
     timbre_voice: str = "Kaveri"
     timbre_language: str = "en-IN"
     prisma_language: str = "en-IN"
-    reasoning_provider: str = ""
-    reasoning_api_url: str = ""
-    reasoning_api_key: str = ""
-    evon_model: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

@@ -1,1 +1,1 @@
-"""Voca backend application."""
+"""LuuVi backend application."""

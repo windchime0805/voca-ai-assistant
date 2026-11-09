@@ -164,7 +164,7 @@ function makeWav(samples: Float32Array[], sampleRate: number) {
 }
 
 export default function App() {
-  const [view, setView] = useState<'login' | 'workspace'>(() => localStorage.getItem('voca-demo-session') === 'active' ? 'workspace' : 'login')
+  const [view, setView] = useState<'login' | 'workspace'>(() => (localStorage.getItem('luuvi-demo-session') ?? localStorage.getItem('voca-demo-session')) === 'active' ? 'workspace' : 'login')
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
   const [showLoginPassword, setShowLoginPassword] = useState(false)
@@ -174,7 +174,10 @@ export default function App() {
   const [notice, setNotice] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
-  const [theme, setTheme] = useState<Theme>(() => localStorage.getItem('voca-theme') === 'night' ? 'night' : 'day')
+  const [theme, setTheme] = useState<Theme>(() => {
+    const savedTheme = localStorage.getItem('luuvi-theme') ?? localStorage.getItem('voca-theme')
+    return savedTheme === 'day' || savedTheme === 'night' ? savedTheme : 'night'
+  })
   const [calendarOpen, setCalendarOpen] = useState(false)
   const [selectedDay, setSelectedDay] = useState(localDayKey())
   const [notes, setNotes] = useState(() => localStorage.getItem('luuvi-notes') || '')
@@ -201,7 +204,7 @@ export default function App() {
   const wakeWordEnabledRef = useRef(false)
   const voiceCaptureRef = useRef(false)
 
-  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('voca-theme', theme) }, [theme])
+  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('luuvi-theme', theme); localStorage.removeItem('voca-theme') }, [theme])
   useEffect(() => { localStorage.setItem('luuvi-notes', notes) }, [notes])
   useEffect(() => () => { wakeWordEnabledRef.current = false; wakeRecognitionRef.current?.stop(); cancelRecordingRef.current?.() }, [])
 
@@ -271,8 +274,8 @@ export default function App() {
     document.getElementById(target[label] || 'dashboard-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const enterDemo = () => { localStorage.setItem('voca-demo-session', 'active'); setLoginMessage(''); setView('workspace') }
-  const signOutDemo = () => { localStorage.removeItem('voca-demo-session'); setProfileMenuOpen(false); setView('login') }
+  const enterDemo = () => { localStorage.setItem('luuvi-demo-session', 'active'); localStorage.removeItem('voca-demo-session'); setLoginMessage(''); setView('workspace') }
+  const signOutDemo = () => { localStorage.removeItem('luuvi-demo-session'); localStorage.removeItem('voca-demo-session'); setProfileMenuOpen(false); setView('login') }
   const submitLogin = (event: React.FormEvent) => {
     event.preventDefault()
     setLoginMessage('Account authentication is not configured in this local build. Use the demo workspace below to continue.')
@@ -407,7 +410,7 @@ export default function App() {
         }
         try {
           const form = new FormData()
-          form.append('audio_file', makeWav(chunks, rate), 'voca-recording.wav')
+          form.append('audio_file', makeWav(chunks, rate), 'luuvi-recording.wav')
           form.append('language_code', 'en-IN')
           const controller = new AbortController()
           cancelRecordingRef.current = () => {

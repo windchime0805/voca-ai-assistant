@@ -19,7 +19,7 @@ async def transcribe(
         raise HTTPException(status_code=400, detail="The recording is empty. Try speaking for a little longer.")
     if len(audio) > MAX_AUDIO_BYTES:
         raise HTTPException(status_code=413, detail="Recording is too large. Please keep voice notes under 25 seconds.")
-    filename = audio_file.filename or "voca-recording.wav"
+    filename = audio_file.filename or "luuvi-recording.wav"
     content_type = audio_file.content_type or "audio/wav"
     try:
         result = await transcribe_audio(audio, filename, content_type, language_code)
