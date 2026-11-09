@@ -1,4 +1,9 @@
+# Local secrets and environment overrides
 .env
+.env.*
+!.env.example
+
+# Local data and generated files
 *.db
 __pycache__/
 *.py[cod]

@@ -1,44 +1,84 @@
-# Voca — Your Personal AI Productivity Assistant
+# LuuVi
 
-Voca is a voice-first productivity assistant with Prisma speech recognition, persistent tasks, and quiet scheduled notifications. General reasoning, calendar, and notes remain future phases.
+### A calmer way to keep your day moving.
 
-## Requirements
+LuuVi is a personal productivity workspace for capturing tasks, planning a day, and remembering what matters. Type a task or record it by voice, then keep your plans together in a simple daily notebook.
 
-- Node.js 20+ and npm
-- Python 3.11+
+> **Project status:** LuuVi is currently a local prototype. The demo workspace works, but account sign-in is not connected yet.
 
-## Run locally
+## What you can do
 
-Backend (from `backend/`):
+- **Capture tasks by voice or text.** Voice recordings are sent to the backend and transcribed with Gnani Prisma. Voice transcription is configured for English (`en-IN`).
+- **Plan tasks by date and time.** Add a due date, priority, category, and reminder time.
+- **See upcoming alerts.** Scheduled reminders appear in the notification panel. Browser alerts are optional and silent; in-app alerts require LuuVi to remain open.
+- **Track your day.** Review daily progress, browse tasks by date, and switch between day and night themes.
+- **Keep quick notes.** Notes are saved in the current browser.
+
+## Run LuuVi locally
+
+You’ll need Node.js 20 or newer, npm, and Python 3.11 or newer.
+
+### 1. Configure the backend
+
+Open a terminal in `backend/`:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 Copy-Item .env.example .env
+```
+
+Open `backend/.env` and add your Gnani API key to `GNANI_API_KEY` to enable voice transcription. Keep this file private; it is ignored by Git. Never put the key in frontend code or a `VITE_` variable.
+
+Start the API:
+
+```powershell
 uvicorn app.main:app --reload --port 8001
 ```
 
-Frontend (from `frontend/` in a second terminal):
+### 2. Start the frontend
+
+In a second terminal, open `frontend/`:
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal. API health is at `http://localhost:8001/api/health`; interactive API docs are at `/docs`.
+Open the local URL Vite prints, usually [http://localhost:5173](http://localhost:5173). Use **Continue to local demo** to enter the workspace.
 
-## Current functionality
+The API health endpoint is [http://localhost:8001/api/health](http://localhost:8001/api/health), and interactive API docs are at [http://localhost:8001/docs](http://localhost:8001/docs).
 
-- React + TypeScript + Vite dashboard with responsive layout, voice capture, daily task progress, and day/night/success themes.
-- FastAPI task CRUD API with SQLite persistence, priorities, categories, due dates, and completion status.
-- Prisma voice transcription routed through FastAPI; voice tasks are saved in the recognized language and can be cancelled from the input box.
-- APScheduler-backed task notifications persist and recover after backend restarts. Browser notifications are silent by default; in-app notifications appear while Voca is open, and unread alerts remain available when it is reopened.
-- Task due times can set notification times automatically; the task form also lets you choose a separate notification time.
-- Timbre speech-generation endpoint and health/configuration status endpoints.
-- SQLAlchemy engine with SQLite initialization and a PostgreSQL-ready URL configuration.
-- Environment-based configuration and placeholder-only `.env.example`.
+## Voice and reminders
 
-## Next phases
+Tap the microphone to record, then tap it again to submit the recording. Allow microphone access for `localhost` in your browser. Voice transcription needs a valid `GNANI_API_KEY` in the backend environment.
 
-Next add the reasoning provider abstraction and controlled agent tools, calendar, and notes. Live Gnani speech requests require the user's configured key and are not run by the production build.
+Setting a task’s due time enables a reminder for that time. Keep the backend running for its scheduler. In-app alerts appear while the workspace is open; browser notifications also require permission from the notification bell.
+
+## Configuration
+
+The backend reads settings from `backend/.env`. The tracked `backend/.env.example` contains safe defaults and placeholders only.
+
+| Setting | Purpose |
+| --- | --- |
+| `GNANI_API_KEY` | Private backend credential for Gnani voice services |
+| `PRISMA_MODEL` | Speech transcription model; defaults to `prisma-v3.0` |
+| `PRISMA_LANGUAGE` | Transcription language; defaults to `en-IN` |
+| `DATABASE_URL` | Task database; defaults to a local SQLite file |
+| `TIMEZONE` | Scheduler timezone; defaults to `Asia/Kolkata` |
+
+The local SQLite database and virtual environment are ignored by Git.
+
+## Project layout
+
+```text
+backend/    FastAPI API, Prisma integration, task storage, and reminder scheduler
+frontend/   React + TypeScript + Vite workspace
+```
+
+## Important limitations
+
+- Email and password fields are a visual sign-in placeholder. Use the local demo option; real account authentication is not implemented.
+- General AI chat, calendar sync, and cloud note sync are not connected.
+- This repository does not currently have a deployed public website. GitHub Pages can host the frontend, but the API and its secrets must run on a backend host.
